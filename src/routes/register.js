@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
+
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
@@ -15,14 +16,16 @@ router.post("/register", async (req, res) => {
     if (existing_user || existing_email) {
       return res.status(400).json({ message: "User is already exists" });
     }
-
-    const new_user = new User({ username, email, password });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt)
+    const new_user = new User({ username, email, password:hashedPassword });
     await new_user.save();
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 

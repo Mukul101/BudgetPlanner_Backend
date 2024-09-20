@@ -8,13 +8,11 @@ const JWT_SECRET_KEY=process.env.JWT_SECRET_KEY;
 const router = express.Router();
 router.post("/", async (req, res) => {
   const {email, password } = req.body;
-  console.log(JWT_SECRET_KEY);
   if (!email || !password) {
     return res.status(400).json({ message: "All fields Required" });
   }
   try {
     const user_email = await User.findOne({email});
-    console.log(user_email);
     if (!user_email ) {
       return res.status(400).json({ message: "Email does not exists" });
     }
@@ -23,7 +21,10 @@ router.post("/", async (req, res) => {
     }
 
     const token =jwt.sign(
-        {email,username:user_email.username},
+        {
+        email:email,
+         username:user_email.username
+        },
         JWT_SECRET_KEY,
         {expiresIn:"2h"}
     );
